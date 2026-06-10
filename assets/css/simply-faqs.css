@@ -1,0 +1,167 @@
+/* ==========================================================================
+   Simply FAQs — Accordion + Category Filters
+   Structural styles. Brand overrides via client config.
+   Tokens: --client-accent, --client-accent-text, --client-font-primary
+   ========================================================================== */
+
+/* ---- Category filters --------------------------------------------------- */
+
+.sf-filters {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-bottom: 32px;
+}
+
+.sf-filter-btn {
+	background: transparent;
+	border: none;
+	border-radius: 0;
+	box-shadow: inset 0 0 0 2px var( --client-accent, #333 );
+	color: var( --client-accent, #333 );
+	cursor: pointer;
+	font-family: var( --client-font-primary, sans-serif );
+	font-size: 13px;
+	font-weight: 700;
+	letter-spacing: 0.05em;
+	padding: 8px 20px;
+	text-transform: uppercase;
+	transition: background 0.2s ease, color 0.2s ease;
+}
+
+.sf-filter-btn.is-active,
+.sf-filter-btn:hover {
+	background: var( --client-accent, #333 );
+	box-shadow: inset 0 0 0 2px var( --client-accent, #333 );
+	color: var( --client-accent-text, #fff );
+}
+
+
+/* ---- FAQ list ------------------------------------------------------------ */
+
+.sf-faqs {
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+}
+
+.sf-faq {
+	border-bottom: 1px solid rgba( 0, 0, 0, 0.15 );
+}
+
+.sf-faq:first-child {
+	border-top: 1px solid rgba( 0, 0, 0, 0.15 );
+}
+
+.is-dark .sf-faq {
+	border-bottom: 1px solid rgba( 255, 255, 255, 0.15 );
+}
+
+.is-dark .sf-faq:first-child {
+	border-top: 1px solid rgba( 255, 255, 255, 0.15 );
+}
+
+.sf-faq.is-hidden {
+	display: none;
+}
+
+
+/* ---- Question button ----------------------------------------------------- */
+
+.sf-faq__question {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	padding: 20px 0;
+	background: none !important;
+	background-color: transparent !important;
+	border: none !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
+	cursor: pointer;
+	text-align: left;
+	font-family: var( --client-font-primary, sans-serif ) !important;
+	font-size: 2em !important;
+	font-weight: 700 !important;
+	text-transform: none !important;
+	letter-spacing: normal !important;
+	color: inherit !important;
+	line-height: 1.3;
+	padding-left: 0 !important;
+	padding-right: 0 !important;
+}
+
+.sf-faq__question:hover,
+.sf-faq__question:focus,
+.sf-faq__question:focus-visible,
+.sf-faq__question:active {
+	background: none !important;
+	background-color: transparent !important;
+	color: inherit !important;
+	outline: none !important;
+	box-shadow: none !important;
+}
+
+
+
+/* ---- Icon — + rotates to × on open -------------------------------------- */
+
+.sf-faq__icon {
+	flex-shrink: 0;
+	width: 20px;
+	height: 20px;
+	position: relative;
+	transition: transform 0.3s ease;
+}
+
+.sf-faq__icon::before,
+.sf-faq__icon::after {
+	content: '';
+	position: absolute;
+	background: currentColor;
+	border-radius: 2px;
+	top: 50%;
+	left: 50%;
+	transform: translate( -50%, -50% );
+}
+
+.sf-faq__icon::before {
+	width: 2px;
+	height: 14px;
+	transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.sf-faq__icon::after {
+	width: 14px;
+	height: 2px;
+}
+
+.sf-faq__question[aria-expanded="true"] .sf-faq__icon::before {
+	transform: translate( -50%, -50% ) rotate( 90deg );
+	opacity: 0;
+}
+
+
+/* ---- Answer — smooth height via CSS grid trick -------------------------- */
+
+.sf-faq__answer {
+	display: grid;
+	grid-template-rows: 0fr;
+	transition: grid-template-rows 0.3s ease;
+}
+
+.sf-faq__answer.is-open {
+	grid-template-rows: 1fr;
+}
+
+.sf-faq__answer-inner {
+	overflow: hidden;
+	padding-bottom: 0;
+	transition: padding-bottom 0.3s ease;
+}
+
+.sf-faq__answer.is-open .sf-faq__answer-inner {
+	padding-bottom: 20px;
+}
