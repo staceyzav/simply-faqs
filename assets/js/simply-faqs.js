@@ -9,6 +9,17 @@
 				var expanded = btn.getAttribute( 'aria-expanded' ) === 'true';
 				var answer   = btn.nextElementSibling;
 
+				// Close all other open FAQs in the same block
+				if ( ! expanded ) {
+					var block = btn.closest( '.sf-faqs-block' );
+					if ( block ) {
+						block.querySelectorAll( '.sf-faq__question[aria-expanded="true"]' ).forEach( function( other ) {
+							other.setAttribute( 'aria-expanded', 'false' );
+							other.nextElementSibling.classList.remove( 'is-open' );
+						} );
+					}
+				}
+
 				btn.setAttribute( 'aria-expanded', ! expanded );
 				answer.classList.toggle( 'is-open', ! expanded );
 			} );
