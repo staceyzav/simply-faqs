@@ -8,6 +8,10 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 //   [simply_faqs]                         — auto-detects page's FAQ category
 //   [simply_faqs category="general"]      — explicit category slug
 //   [simply_faqs category="general" limit="10"]
+//   [simply_faqs orderby="title" order="ASC"]
+//
+// orderby: menu_order (default), title, date, rand
+// order:   ASC (default), DESC
 //
 // Auto-detection: if the current page has a simply_faq_cat term assigned,
 // the shortcode uses it automatically — no attribute needed.
@@ -21,9 +25,15 @@ function sf_shortcode( $atts ) {
 	$atts = shortcode_atts( array(
 		'category' => '',
 		'limit'    => get_option( 'sf_limit', -1 ),
+		'orderby'  => 'menu_order',
+		'order'    => 'ASC',
 	), $atts, 'simply_faqs' );
 
 	$limit = intval( $atts['limit'] );
+
+	$allowed_orderby = array( 'menu_order', 'title', 'date', 'rand' );
+	$orderby = in_array( $atts['orderby'], $allowed_orderby, true ) ? $atts['orderby'] : 'menu_order';
+	$order   = strtoupper( $atts['order'] ) === 'DESC' ? 'DESC' : 'ASC';
 
 	// Resolve category: explicit attribute → page's own term → all
 	$category = sanitize_text_field( $atts['category'] );
@@ -39,8 +49,8 @@ function sf_shortcode( $atts ) {
 		'post_type'      => 'simply_faq',
 		'post_status'    => 'publish',
 		'posts_per_page' => $limit,
-		'orderby'        => 'menu_order title',
-		'order'          => 'ASC',
+		'orderby'        => $orderby,
+		'order'          => $order,
 	);
 
 	if ( ! empty( $category ) ) {
