@@ -5,7 +5,7 @@
  * Description: FAQ post type with categories. Categories attach to pages so [simply_faqs] auto-detects which FAQs to show. Accordion expand/collapse, zero dependencies.
  * Author:      Simply Design
  * Author URI:  https://simplydesign.com
- * Version:     1.1.3
+ \* Version:     1.1.4
  * License:     GPL-2.0-or-later
  * Text Domain: simply-faqs
  */

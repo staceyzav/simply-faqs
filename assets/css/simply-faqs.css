@@ -165,3 +165,9 @@
 .sf-faq__answer.is-open .sf-faq__answer-inner {
 	padding-bottom: 20px;
 }
+
+@media ( max-width: 600px ) {
+	.sf-faq__question {
+		font-size: 1.35em !important;
+	}
+}
