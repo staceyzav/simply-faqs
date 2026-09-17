@@ -49,7 +49,8 @@
 						if ( q ) q.setAttribute( 'aria-expanded', 'false' );
 						if ( a ) a.classList.remove( 'is-open' );
 
-						if ( ! cat || faq.dataset.category === cat ) {
+						var faqCats = ( faq.dataset.categories || faq.dataset.category || '' ).split( ' ' );
+						if ( ! cat || faqCats.indexOf( cat ) !== -1 ) {
 							faq.classList.remove( 'is-hidden' );
 						} else {
 							faq.classList.add( 'is-hidden' );
