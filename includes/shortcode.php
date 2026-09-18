@@ -35,13 +35,14 @@ function sf_shortcode( $atts ) {
 	$orderby = in_array( $atts['orderby'], $allowed_orderby, true ) ? $atts['orderby'] : 'menu_order';
 	$order   = strtoupper( $atts['order'] ) === 'DESC' ? 'DESC' : 'ASC';
 
-	// Resolve category: explicit attribute → page's own term → all
-	$category = sanitize_text_field( $atts['category'] );
+	// Resolve categories: comma-separated attribute → page's own terms → all
+	$raw_cats  = sanitize_text_field( $atts['category'] );
+	$categories = array_values( array_filter( array_map( 'trim', explode( ',', $raw_cats ) ) ) );
 
-	if ( empty( $category ) ) {
+	if ( empty( $categories ) ) {
 		$page_terms = get_the_terms( get_queried_object_id(), 'simply_faq_cat' );
 		if ( $page_terms && ! is_wp_error( $page_terms ) ) {
-			$category = $page_terms[0]->slug;
+			$categories = wp_list_pluck( $page_terms, 'slug' );
 		}
 	}
 
@@ -53,12 +54,13 @@ function sf_shortcode( $atts ) {
 		'order'          => $order,
 	);
 
-	if ( ! empty( $category ) ) {
+	if ( ! empty( $categories ) ) {
 		$args['tax_query'] = array(
 			array(
 				'taxonomy' => 'simply_faq_cat',
 				'field'    => 'slug',
-				'terms'    => $category,
+				'terms'    => $categories,
+				'operator' => 'IN',
 			),
 		);
 	}
