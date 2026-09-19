@@ -23,10 +23,11 @@ add_shortcode( 'simply_faqs', 'sf_shortcode' );
 function sf_shortcode( $atts ) {
 
 	$atts = shortcode_atts( array(
-		'category' => '',
-		'limit'    => get_option( 'sf_limit', -1 ),
-		'orderby'  => 'menu_order',
-		'order'    => 'ASC',
+		'category'      => '',
+		'limit'         => get_option( 'sf_limit', -1 ),
+		'orderby'       => 'menu_order',
+		'order'         => 'ASC',
+		'no_autodetect' => '',
 	), $atts, 'simply_faqs' );
 
 	$limit = intval( $atts['limit'] );
@@ -35,11 +36,11 @@ function sf_shortcode( $atts ) {
 	$orderby = in_array( $atts['orderby'], $allowed_orderby, true ) ? $atts['orderby'] : 'menu_order';
 	$order   = strtoupper( $atts['order'] ) === 'DESC' ? 'DESC' : 'ASC';
 
-	// Resolve categories: comma-separated attribute → page's own terms → all
-	$raw_cats  = sanitize_text_field( $atts['category'] );
+	// Resolve categories: comma-separated attribute → page's own terms (unless blocked) → all
+	$raw_cats   = sanitize_text_field( $atts['category'] );
 	$categories = array_values( array_filter( array_map( 'trim', explode( ',', $raw_cats ) ) ) );
 
-	if ( empty( $categories ) ) {
+	if ( empty( $categories ) && empty( $atts['no_autodetect'] ) ) {
 		$page_terms = get_the_terms( get_queried_object_id(), 'simply_faq_cat' );
 		if ( $page_terms && ! is_wp_error( $page_terms ) ) {
 			$categories = wp_list_pluck( $page_terms, 'slug' );
@@ -79,20 +80,33 @@ function sf_shortcode( $atts ) {
 		$faqs->the_post();
 		$id    = get_the_ID();
 		$terms = get_the_terms( $id, 'simply_faq_cat' );
-		$slug  = '';
-		$label = '';
+
+		$all_slugs  = array();
+		$all_labels = array();
 		if ( $terms && ! is_wp_error( $terms ) ) {
-			$slug  = $terms[0]->slug;
-			$label = $terms[0]->name;
-			if ( ! isset( $seen_cats[ $slug ] ) ) {
-				$seen_cats[ $slug ] = $label;
+			foreach ( $terms as $term ) {
+				$all_slugs[]              = $term->slug;
+				$all_labels[ $term->slug ] = $term->name;
 			}
 		}
+
+		// Only attribute the FAQ to categories that were actually queried.
+		// A double-tagged FAQ shows only under the categories selected for this page.
+		$matched_slugs = ! empty( $categories )
+			? array_values( array_intersect( $all_slugs, $categories ) )
+			: $all_slugs;
+
+		foreach ( $matched_slugs as $slug ) {
+			if ( ! isset( $seen_cats[ $slug ] ) && isset( $all_labels[ $slug ] ) ) {
+				$seen_cats[ $slug ] = $all_labels[ $slug ];
+			}
+		}
+
 		$faq_data[] = array(
-			'id'       => $id,
-			'title'    => get_the_title(),
-			'content'  => get_the_content(),
-			'cat_slug' => $slug,
+			'id'         => $id,
+			'title'      => get_the_title(),
+			'content'    => get_the_content(),
+			'cat_slugs'  => $matched_slugs,
 		);
 	}
 	wp_reset_postdata();
@@ -115,7 +129,7 @@ function sf_shortcode( $atts ) {
 		<div class="sf-faqs">
 
 			<?php foreach ( $faq_data as $faq ) : ?>
-				<div class="sf-faq" data-category="<?php echo esc_attr( $faq['cat_slug'] ); ?>">
+				<div class="sf-faq" data-categories="<?php echo esc_attr( implode( ' ', $faq['cat_slugs'] ) ); ?>">
 
 					<button class="sf-faq__question" aria-expanded="false">
 						<span class="sf-faq__question-text"><?php echo esc_html( $faq['title'] ); ?></span>
