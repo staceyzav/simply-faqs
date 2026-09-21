@@ -102,6 +102,15 @@ function sf_admin_column_content( $column, $post_id ) {
 // ADMIN — enqueue sortable JS + inline styles on FAQ list screen
 // ==========================================================================
 
+add_action( 'pre_get_posts', 'sf_admin_order' );
+function sf_admin_order( $query ) {
+	if ( ! is_admin() || ! $query->is_main_query() ) return;
+	if ( $query->get( 'post_type' ) === 'simply_faq' && ! $query->get( 'orderby' ) ) {
+		$query->set( 'orderby', 'menu_order' );
+		$query->set( 'order', 'ASC' );
+	}
+}
+
 add_action( 'admin_enqueue_scripts', 'sf_admin_enqueue' );
 
 function sf_admin_enqueue( $hook ) {
