@@ -12,7 +12,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'SF_VERSION', '1.1.3' );
+define( 'SF_VERSION', '1.1.4' );
 define( 'SF_PATH',    plugin_dir_path( __FILE__ ) );
 define( 'SF_URL',     plugin_dir_url( __FILE__ ) );
 
