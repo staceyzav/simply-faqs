@@ -7,7 +7,9 @@
 		document.querySelectorAll( '.sf-faq__question' ).forEach( function( btn ) {
 			btn.addEventListener( 'click', function() {
 				var expanded = btn.getAttribute( 'aria-expanded' ) === 'true';
-				var answer   = btn.nextElementSibling;
+				var faq      = btn.closest( '.sf-faq' );
+				var answer   = faq ? faq.querySelector( '.sf-faq__answer' ) : null;
+				if ( ! answer ) return;
 
 				// Close all other open FAQs in the same block
 				if ( ! expanded ) {
@@ -15,7 +17,8 @@
 					if ( block ) {
 						block.querySelectorAll( '.sf-faq__question[aria-expanded="true"]' ).forEach( function( other ) {
 							other.setAttribute( 'aria-expanded', 'false' );
-							other.nextElementSibling.classList.remove( 'is-open' );
+							var otherFaq = other.closest( '.sf-faq' );
+							if ( otherFaq ) otherFaq.querySelector( '.sf-faq__answer' ).classList.remove( 'is-open' );
 						} );
 					}
 				}
