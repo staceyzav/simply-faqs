@@ -149,5 +149,8 @@ function sf_shortcode( $atts ) {
 
 	</div>
 	<?php
-	return preg_replace( '/>\s+</', '><', ob_get_clean() );
+	$html = preg_replace( '/>\s+</', '><', ob_get_clean() );
+	$html = preg_replace( '/<p[^>]*>\s*<\/p>/', '', $html );
+	$html = preg_replace( '/<p[^>]*>(<button[^>]*>.*?<\/button>)<\/p>/s', '$1', $html );
+	return $html;
 }
