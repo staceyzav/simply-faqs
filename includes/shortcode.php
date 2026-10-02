@@ -149,5 +149,5 @@ function sf_shortcode( $atts ) {
 
 	</div>
 	<?php
-	return ob_get_clean();
+	return preg_replace( '/>\s+</', '><', ob_get_clean() );
 }
